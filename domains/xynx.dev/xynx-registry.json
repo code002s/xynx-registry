@@ -1,0 +1,1 @@
+{ "owner": { "username": "code002s" }, "description": "kyn-servers", "records": [{ "type": "CNAME", "name": "@", "value": "xynx-registry.pages.dev", "proxied": true }] }
