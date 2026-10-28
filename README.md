@@ -3,6 +3,9 @@
 Получи бесплатный поддомен вида `name.xynx.surf`, `name.xynx.pro` или `name.xynx.dev` для своего сайта или проекта.
 Регистрация идёт через Pull Request: проверка автоматическая, DNS создаётся сам после merge.
 
+- Сайт: <https://code002s.github.io/xynx-registry/>
+- Репозиторий: <https://github.com/code002s/xynx-registry>
+
 ## Как получить поддомен
 
 1. Сделай fork этого репозитория.
