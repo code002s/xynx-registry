@@ -1,0 +1,14 @@
+{
+  "owner": {
+    "username": "code002s"
+  },
+  "description": "xynx registry",
+  "records": [
+    {
+      "type": "CNAME",
+      "name": "@",
+      "value": "code002s.github.io",
+      "proxied": true
+    }
+  ]
+}
