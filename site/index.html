@@ -35,6 +35,10 @@ nav ul a{border-bottom:1px solid transparent}nav ul a:hover{border-color:var(--i
 h1{font-size:clamp(52px,8.4vw,120px);line-height:.92;margin:0 0 30px;letter-spacing:-.01em}
 .lead{max-width:440px;color:var(--mute);margin:0 0 26px}
 .check{max-width:470px;background:var(--panel);border:2px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:18px}
+.note{max-width:470px;margin:0 0 18px;border:2px solid var(--ink);border-left:8px solid var(--bad);background:var(--panel);padding:11px 14px;font-size:12px;line-height:1.55;color:var(--mute)}
+.note[hidden]{display:none}
+.note a{text-decoration:underline}
+.note b{color:var(--ink)}
 .row{display:flex;border:2px solid var(--ink)}
 .row input{flex:1;min-width:0;border:0;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;padding:12px 14px;outline:0}
 .row span{display:flex;align-items:center;padding:0 14px;background:var(--ink);color:var(--inv);font-weight:700;white-space:nowrap}
@@ -85,6 +89,7 @@ footer{border-top:1px solid var(--line);padding:26px 0;font-size:12px;color:var(
 <div>
 <h1 class="px">free<br>sub&shy;domains</h1>
 <p class="lead">Get <b>name.xynx.surf</b>, <b>.pro</b> or <b>.dev</b> for your site, bot or project. Open a pull request, and the DNS record appears after merge.</p>
+<p class="note" id="note" hidden></p>
 <div class="check">
 <div class="row"><input id="n" placeholder="yourname" maxlength="30" autocomplete="off" spellcheck="false" aria-label="Subdomain name"><select id="z" aria-label="Zone"></select></div>
 <p class="st" id="st" aria-live="polite">Type a name, 2 to 30 characters.</p>
@@ -154,6 +159,22 @@ var reserved=[],timer,seq=0;
 ZONES.forEach(function(zn){var e=document.createElement('option');e.textContent='.'+zn;z.appendChild(e)});
 [].forEach.call(document.querySelectorAll('.gh'),function(a){a.href=READY?'https://github.com/'+REPO:'#'});
 if(READY)fetch(RAW+'reserved.json').then(function(r){return r.json()}).then(function(j){reserved=j}).catch(function(){});
+/* A name can be free in the registry while the zone itself does not exist yet,
+   so check the zone over DNS (DoH) and say it straight instead of promising a site. */
+var note=document.getElementById('note'),dnsCache={};
+function renderNote(zone,live){
+  if(live){note.hidden=true;return}
+  note.innerHTML='Zone <b>'+zone+'</b> is not delegated yet, so subdomains will not open. '+
+    'The domain has not been bought; this page is served from <a href="https://xynx-registry.pages.dev/">xynx-registry.pages.dev</a>.';
+  note.hidden=false;
+}
+function dnsCheck(zone){
+  if(dnsCache[zone]!==undefined){renderNote(zone,dnsCache[zone]);return}
+  fetch('https://dns.google/resolve?name='+encodeURIComponent(zone)+'&type=NS',{cache:'no-store'})
+    .then(function(r){return r.json()})
+    .then(function(j){var live=!!(j.Status===0&&j.Answer&&j.Answer.length);dnsCache[zone]=live;renderNote(zone,live)})
+    .catch(function(){dnsCache[zone]=null;renderNote(zone,false)});
+}
 function setSt(t,c){st.textContent=t;st.className='st '+(c||'')}
 function lock(){reg.setAttribute('aria-disabled','true');reg.removeAttribute('target');reg.href='#'}
 function tpl(){return JSON.stringify({owner:{username:'YOUR-GITHUB-LOGIN',email:'you@example.com'},description:'My site',records:[{type:'CNAME',name:'@',value:'YOUR-GITHUB-LOGIN.github.io',proxied:true}]},null,2)+'\n'}
@@ -179,6 +200,8 @@ function check(){
 }
 n.addEventListener('input',check);
 z.addEventListener('change',check);
+z.addEventListener('change',function(){dnsCheck(ZONES[z.selectedIndex])});
+dnsCheck(ZONES[z.selectedIndex]);
 
 (function(){
 var N=64,cv=document.getElementById('c'),cx=cv.getContext('2d'),S=cv.width/N,g;
