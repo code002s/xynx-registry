@@ -32,13 +32,17 @@ jobs:
         run: |
           if [ -n "$TOKEN" ] && [ -n "$ZONES" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
-          elif [ -n "$(find domains -name '*.json' -print -quit)" ]; then
-            echo "::error::CF_API_TOKEN / CF_ZONES are not set, but domains/*.json exist."
-            exit 1
-          else
-            echo "::warning::Cloudflare secrets are not set yet — DNS sync skipped."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          echo "::warning::Cloudflare is not configured (CF_API_TOKEN / CF_ZONES missing) — DNS was not changed."
+          {
+            echo "### DNS sync skipped"
+            echo ""
+            echo "Cloudflare is not configured yet, so no DNS records were created or removed."
+            echo "Add the \`CF_API_TOKEN\` and \`CF_ZONES\` secrets in **Settings → Secrets and variables → Actions**."
+            echo "Until then \`domains/*.json\` are stored in the repo but the subdomains do not resolve."
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Sync to Cloudflare
         if: steps.cf.outputs.ready == 'true'
         env:
