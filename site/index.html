@@ -153,10 +153,17 @@ try{var q=new URLSearchParams(location.search).get('repo');if(q)REPO=q}catch(e){
 var READY=!/^YOUR-GITHUB-USERNAME\//.test(REPO)&&/^[^/\s]+\/[^/\s]+$/.test(REPO);
 var RAW='https://raw.githubusercontent.com/'+REPO+'/'+BRANCH+'/';
 var n=document.getElementById('n'),z=document.getElementById('z'),st=document.getElementById('st'),reg=document.getElementById('reg');
-var reserved=[],timer,seq=0;
+var reserved=[],taken=null,timer,seq=0;
 ZONES.forEach(function(zn){var e=document.createElement('option');e.textContent='.'+zn;z.appendChild(e)});
 [].forEach.call(document.querySelectorAll('.gh'),function(a){a.href=READY?'https://github.com/'+REPO:'#'});
-if(READY)fetch(RAW+'reserved.json').then(function(r){return r.json()}).then(function(j){reserved=j}).catch(function(){});
+/* Everything the checker needs is published next to the page, so the site keeps
+   working where raw.githubusercontent.com is blocked. The raw repo stays a fallback. */
+function getJSON(url){return fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
+getJSON('reserved.json').catch(function(){return getJSON(RAW+'reserved.json')})
+  .then(function(j){reserved=j||[]}).catch(function(){});
+getJSON('api/domains.json').then(function(j){
+  taken={};(j.domains||[]).forEach(function(d){taken[d.zone+'/'+d.name]=1});
+}).catch(function(){taken=null});
 /* A name can be free in the registry while the zone itself does not exist yet,
    so check the zone over DNS (DoH) and say it straight instead of promising a site. */
 var note=document.getElementById('note'),dnsCache={};
@@ -176,6 +183,11 @@ function dnsCheck(zone){
 function setSt(t,c){st.textContent=t;st.className='st '+(c||'')}
 function lock(){reg.setAttribute('aria-disabled','true');reg.removeAttribute('target');reg.href='#'}
 function tpl(){return JSON.stringify({owner:{username:'YOUR-GITHUB-LOGIN',email:'you@example.com'},description:'My site',records:[{type:'CNAME',name:'@',value:'YOUR-GITHUB-LOGIN.github.io',proxied:true}]},null,2)+'\n'}
+function free(zone,v){
+  setSt(v+'.'+zone+' is free.','ok');
+  reg.href='https://github.com/'+REPO+'/new/'+BRANCH+'/domains?filename='+encodeURIComponent(zone+'/'+v+'.json')+'&value='+encodeURIComponent(tpl());
+  reg.target='_blank';reg.rel='noopener';reg.setAttribute('aria-disabled','false');
+}
 function check(){
   var zone=ZONES[z.selectedIndex],v=n.value.trim().toLowerCase(),id=++seq;
   lock();clearTimeout(timer);
@@ -185,13 +197,15 @@ function check(){
   if(reserved.indexOf(v)>-1){setSt('This name is reserved. Try another.','bad');return}
   setSt('Checking...');
   timer=setTimeout(function(){
+    if(taken){
+      if(id!==seq)return;
+      if(taken[zone+'/'+v]){setSt('Already taken. Try another name.','bad');return}
+      free(zone,v);return;
+    }
     fetch(RAW+'domains/'+zone+'/'+v+'.json',{cache:'no-store'}).then(function(r){
       if(id!==seq)return;
-      if(r.status===404){
-        setSt(v+'.'+zone+' is free.','ok');
-        reg.href='https://github.com/'+REPO+'/new/'+BRANCH+'/domains?filename='+encodeURIComponent(zone+'/'+v+'.json')+'&value='+encodeURIComponent(tpl());
-        reg.target='_blank';reg.rel='noopener';reg.setAttribute('aria-disabled','false');
-      }else if(r.ok){setSt('Already taken. Try another name.','bad')}
+      if(r.status===404){free(zone,v)}
+      else if(r.ok){setSt('Already taken. Try another name.','bad')}
       else{setSt('Could not check right now. Try again in a moment.','bad')}
     }).catch(function(){if(id===seq)setSt('Could not check right now. Try again in a moment.','bad')});
   },350);

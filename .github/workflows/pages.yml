@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'domains/**'
+      - 'reserved.json'
+      - 'zones.json'
+      - 'scripts/build-site.js'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
