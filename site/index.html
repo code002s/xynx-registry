@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>xynx.surf — free subdomains</title>
+<meta name="description" content="Free subdomains on xynx.surf, xynx.pro and xynx.dev. One JSON file, one pull request, DNS appears after merge.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xynx — free subdomains">
+<meta property="og:description" content="Get name.xynx.surf, .pro or .dev for your site, bot or project.">
+<meta name="theme-color" content="#ececec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ececec;--panel:#fff;--ink:#0a0a0a;--mute:#5f5f5f;--line:#d4d4d4;--inv:#fff;--ok:#0a7a3d;--bad:#b3261e}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101010;--panel:#181818;--ink:#f1f1f1;--mute:#9b9b9b;--line:#2a2a2a;--inv:#0a0a0a;--ok:#4ade80;--bad:#f87171}}
+:root[data-theme="dark"]{--bg:#101010;--panel:#181818;--ink:#f1f1f1;--mute:#9b9b9b;--line:#2a2a2a;--inv:#0a0a0a;--ok:#4ade80;--bad:#f87171}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.65 "JetBrains Mono",ui-monospace,Menlo,monospace;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:inherit;text-decoration:none}
+.px{font-family:"Pixelify Sans","JetBrains Mono",monospace;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 119px,var(--line) 119px 120px);opacity:.45;pointer-events:none}
+nav{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+.logo{display:flex;gap:10px;align-items:center;font-weight:700}
+.logo i{width:22px;height:22px;background:var(--ink);clip-path:polygon(0 0,40% 0,40% 40%,60% 40%,60% 0,100% 0,100% 100%,60% 100%,60% 60%,40% 60%,40% 100%,0 100%)}
+nav ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:13px}
+nav ul a{border-bottom:1px solid transparent}nav ul a:hover{border-color:var(--ink)}
+.main{position:relative;z-index:2;flex:1;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:20px}
+h1{font-size:clamp(52px,8.4vw,120px);line-height:.92;margin:0 0 30px;letter-spacing:-.01em}
+.lead{max-width:440px;color:var(--mute);margin:0 0 26px}
+.check{max-width:470px;background:var(--panel);border:2px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:18px}
+.row{display:flex;border:2px solid var(--ink)}
+.row input{flex:1;min-width:0;border:0;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;padding:12px 14px;outline:0}
+.row span{display:flex;align-items:center;padding:0 14px;background:var(--ink);color:var(--inv);font-weight:700;white-space:nowrap}
+.row select{border:0;border-left:2px solid var(--ink);background:var(--ink);color:var(--inv);font:inherit;font-weight:700;padding:0 12px;cursor:pointer;outline:0}
+.row select option{background:var(--panel);color:var(--ink)}
+.row:focus-within{outline:2px solid var(--ink);outline-offset:3px}
+.st{min-height:26px;margin:12px 0 12px;font-size:13px;color:var(--mute)}
+.st.ok{color:var(--ok)}.st.bad{color:var(--bad)}
+.btn{display:inline-block;background:var(--ink);color:var(--inv);padding:14px 26px;font-weight:700;font-size:13px;border:2px solid var(--ink);transition:.15s}
+.btn:hover{background:var(--bg);color:var(--ink)}
+.check .btn{width:100%;text-align:center}
+.btn[aria-disabled=true]{opacity:.35;pointer-events:none}
+.stage{position:relative;aspect-ratio:1/1;width:100%;max-width:600px;justify-self:end}
+canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.bubble{position:absolute;top:6%;right:2%;background:var(--panel);border:2px solid var(--ink);padding:12px 16px;font-size:13px;max-width:270px;min-height:64px;box-shadow:5px 5px 0 var(--ink);z-index:2}
+.bubble:after{content:"";position:absolute;left:28px;bottom:-12px;width:14px;height:14px;background:var(--panel);border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg)}
+.cur{display:inline-block;width:8px;height:14px;background:var(--ink);vertical-align:-2px;animation:b 1s steps(2) infinite}
+@keyframes b{50%{opacity:0}}
+.stats{position:relative;z-index:2;display:flex;gap:22px;flex-wrap:wrap;padding:20px 0 30px;font-size:12px;color:var(--mute);border-top:1px solid var(--line)}
+.stats b{color:var(--ink)}
+.ticker{overflow:hidden;white-space:nowrap;border-block:2px solid var(--ink);background:var(--ink);color:var(--inv);font-size:12px;padding:10px 0}
+.ticker span{display:inline-block;padding-left:100%;animation:t 28s linear infinite}
+@keyframes t{to{transform:translateX(-100%)}}
+section{padding:96px 0}
+h2{font-size:clamp(30px,4.6vw,56px);margin:0 0 40px;line-height:1}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);background:var(--panel)}
+.card{padding:30px;border-right:2px solid var(--ink)}.card:last-child{border:0}
+.card .n{font-size:12px;color:var(--mute)}
+.card h3{margin:14px 0 10px;font-size:22px}
+.card p{margin:0;color:var(--mute);font-size:13px}
+.rules{list-style:none;margin:0;padding:0;border:2px solid var(--line);background:var(--panel);columns:2;column-gap:0}
+.rules li{padding:14px 22px;border-bottom:1px solid var(--line);color:var(--mute);font-size:13px;break-inside:avoid}
+.rules li:before{content:"■ ";color:var(--ink);font-size:9px}
+.cta{text-align:center;border-top:2px solid var(--ink)}
+footer{border-top:1px solid var(--line);padding:26px 0;font-size:12px;color:var(--mute);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media(max-width:860px){.main{grid-template-columns:1fr;padding-top:10px}.stage{justify-self:center;max-width:420px}.grid{grid-template-columns:1fr}.card{border-right:0;border-bottom:2px solid var(--ink)}nav ul{display:none}.rules{columns:1}}
+@media(prefers-reduced-motion:reduce){.ticker span{animation:none;padding:0}}
+</style>
+</head>
+<body>
+<header class="hero" id="top">
+<div class="wrap" style="display:flex;flex-direction:column;flex:1;width:100%">
+<nav>
+<a class="logo" href="#top"><i></i>xynx.surf</a>
+<ul><li><a href="#features">Features</a></li><li><a href="#how">How it works</a></li><li><a href="#rules">Rules</a></li><li><a class="gh" href="#">GitHub</a></li></ul>
+</nav>
+<div class="main">
+<div>
+<h1 class="px">free<br>sub&shy;domains</h1>
+<p class="lead">Get <b>name.xynx.surf</b>, <b>.pro</b> or <b>.dev</b> for your site, bot or project. Open a pull request, and the DNS record appears after merge.</p>
+<div class="check">
+<div class="row"><input id="n" placeholder="yourname" maxlength="30" autocomplete="off" spellcheck="false" aria-label="Subdomain name"><select id="z" aria-label="Zone"></select></div>
+<p class="st" id="st" aria-live="polite">Type a name, 2 to 30 characters.</p>
+<a class="btn" id="reg" href="#" aria-disabled="true">Claim it with a pull request</a>
+</div>
+</div>
+<div class="stage" aria-hidden="true">
+<div class="bubble"><span id="msg"></span><span class="cur"></span></div>
+<canvas id="c" width="512" height="512"></canvas>
+</div>
+</div>
+<div class="stats"><span><b>0 €</b> forever</span><span>&bull;</span><span><b>1 pull request</b> to start</span><span>&bull;</span><span><b>3</b> subdomains per person</span><span>&bull;</span><span><b>10</b> records each</span></div>
+</div>
+</header>
+
+<div class="ticker" aria-hidden="true"><span>XYNX.SURF / .PRO / .DEV &nbsp;■&nbsp; FREE SUBDOMAINS &nbsp;■&nbsp; A, AAAA, CNAME, TXT &nbsp;■&nbsp; CLOUDFLARE DNS &nbsp;■&nbsp; OPEN SOURCE &nbsp;■&nbsp; ONE PULL REQUEST &nbsp;■&nbsp; XYNX.SURF &nbsp;■&nbsp; FREE SUBDOMAINS &nbsp;■&nbsp; CLOUDFLARE DNS</span></div>
+
+<section id="features"><div class="wrap">
+<h2 class="px">Features</h2>
+<div class="grid">
+<div class="card"><div class="n">Free</div><h3>No payment</h3><p>Your name.xynx.surf costs nothing. No card, no trial, no account on this site.</p></div>
+<div class="card"><div class="n">Git</div><h3>Everything in a pull request</h3><p>One JSON file per subdomain. A bot checks it, a maintainer merges it.</p></div>
+<div class="card"><div class="n">DNS</div><h3>Automatic records</h3><p>After merge, A, AAAA, CNAME and TXT records are created in Cloudflare within minutes.</p></div>
+</div>
+</div></section>
+
+<section id="how" style="padding-top:0"><div class="wrap">
+<h2 class="px">How it works</h2>
+<div class="grid">
+<div class="card"><div class="n">Step 1</div><h3>Pick a name</h3><p>Type it above. If it is free, the button turns on.</p></div>
+<div class="card"><div class="n">Step 2</div><h3>Send the file</h3><p>GitHub forks the repo and opens domains/name.json with a template. Fill in your login and target.</p></div>
+<div class="card"><div class="n">Step 3</div><h3>Wait for merge</h3><p>The check runs on its own. After merge your subdomain starts resolving.</p></div>
+</div>
+</div></section>
+
+<section id="rules" style="padding-top:0"><div class="wrap">
+<h2 class="px">Rules</h2>
+<ul class="rules">
+<li>Name: 2 to 30 characters, a-z, 0-9 and a hyphen, not at the start or end.</li>
+<li>Up to 3 subdomains per person, up to 10 records per subdomain.</li>
+<li>The owner login in the file must match the pull request author.</li>
+<li>CNAME cannot sit next to A or AAAA on the same name.</li>
+<li>No phishing, malware, spam, illegal content or impersonation. Such subdomains are removed without warning.</li>
+<li>A subdomain pointing to a missing service for 90+ days can be released.</li>
+</ul>
+</div></section>
+
+<section id="start" class="cta"><div class="wrap">
+<h2 class="px">One name.<br>One pull request.</h2>
+<a class="btn" href="#top">Check a name</a>
+</div></section>
+
+<div class="wrap"><footer><span>&copy; 2026 xynx.surf</span><span>MIT licensed &bull; <a class="gh" href="#" style="text-decoration:underline">Source on GitHub</a></span></footer></div>
+
+<script>
+/* EDIT: your registry repo. Zones must match zones.json in the repo.
+   The "Deploy site" workflow swaps the placeholder for the real owner/repo;
+   for a local preview open the page with ?repo=owner/name. */
+var REPO='YOUR-GITHUB-USERNAME/xynx-registry',BRANCH='main';
+var ZONES=['xynx.surf','xynx.pro','xynx.dev'];
+
+try{var q=new URLSearchParams(location.search).get('repo');if(q)REPO=q}catch(e){}
+var READY=!/^YOUR-GITHUB-USERNAME\//.test(REPO)&&/^[^/\s]+\/[^/\s]+$/.test(REPO);
+var RAW='https://raw.githubusercontent.com/'+REPO+'/'+BRANCH+'/';
+var n=document.getElementById('n'),z=document.getElementById('z'),st=document.getElementById('st'),reg=document.getElementById('reg');
+var reserved=[],timer,seq=0;
+ZONES.forEach(function(zn){var e=document.createElement('option');e.textContent='.'+zn;z.appendChild(e)});
+[].forEach.call(document.querySelectorAll('.gh'),function(a){a.href=READY?'https://github.com/'+REPO:'#'});
+if(READY)fetch(RAW+'reserved.json').then(function(r){return r.json()}).then(function(j){reserved=j}).catch(function(){});
+function setSt(t,c){st.textContent=t;st.className='st '+(c||'')}
+function lock(){reg.setAttribute('aria-disabled','true');reg.removeAttribute('target');reg.href='#'}
+function tpl(){return JSON.stringify({owner:{username:'YOUR-GITHUB-LOGIN',email:'you@example.com'},description:'My site',records:[{type:'CNAME',name:'@',value:'YOUR-GITHUB-LOGIN.github.io',proxied:true}]},null,2)+'\n'}
+function check(){
+  var zone=ZONES[z.selectedIndex],v=n.value.trim().toLowerCase(),id=++seq;
+  lock();clearTimeout(timer);
+  if(!READY){setSt('Preview mode: set REPO in site/index.html, or open this page with ?repo=owner/name.','bad');return}
+  if(!v){setSt('Type a name, 2 to 30 characters.');return}
+  if(!/^[a-z0-9][a-z0-9-]{0,28}[a-z0-9]$/.test(v)){setSt('Use 2 to 30 characters: a-z, 0-9, hyphen (not first or last).','bad');return}
+  if(reserved.indexOf(v)>-1){setSt('This name is reserved. Try another.','bad');return}
+  setSt('Checking...');
+  timer=setTimeout(function(){
+    fetch(RAW+'domains/'+zone+'/'+v+'.json',{cache:'no-store'}).then(function(r){
+      if(id!==seq)return;
+      if(r.status===404){
+        setSt(v+'.'+zone+' is free.','ok');
+        reg.href='https://github.com/'+REPO+'/new/'+BRANCH+'/domains?filename='+encodeURIComponent(zone+'/'+v+'.json')+'&value='+encodeURIComponent(tpl());
+        reg.target='_blank';reg.rel='noopener';reg.setAttribute('aria-disabled','false');
+      }else if(r.ok){setSt('Already taken. Try another name.','bad')}
+      else{setSt('Could not check right now. Try again in a moment.','bad')}
+    }).catch(function(){if(id===seq)setSt('Could not check right now. Try again in a moment.','bad')});
+  },350);
+}
+n.addEventListener('input',check);
+z.addEventListener('change',check);
+
+(function(){
+var N=64,cv=document.getElementById('c'),cx=cv.getContext('2d'),S=cv.width/N,g;
+var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function clr(){return getComputedStyle(document.body).color}
+function R(x,y,w,h,v){for(var j=y;j<y+h;j++)for(var i=x;i<x+w;i++)if(i>=0&&j>=0&&i<N&&j<N)g[j*N+i]=v}
+function F(x,y,w,h,v,f){R(x,y,w,h,f);R(x,y,w,1,v);R(x,y+h-1,w,1,v);R(x,y,1,h,v);R(x+w-1,y,1,h,v)}
+function build(t){
+g=new Float32Array(N*N);
+R(8,60,48,2,.28);
+F(11,6,42,52,1,.1);R(13,58,6,2,1);R(45,58,6,2,1);
+for(var u=0;u<5;u++){var y=10+u*9;
+F(15,y,34,7,.9,.2);
+for(var k=0;k<3;k++){var on=Math.sin(t*2.2+u*1.7+k*2.3)>-.2;R(18+k*4,y+2,2,3,on?1:.12)}
+for(var s=0;s<8;s++)R(32+s*2,y+2,1,3,.55);
+R(44,y+2,3,3,u===2?(Math.sin(t*6)>0?1:.2):.45)}
+R(24,54,16,1,.6)}
+function draw(t){
+build(t);cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle=clr();
+var sw=(t*14)%(N+16)-8;
+for(var j=0;j<N;j++){
+var off=Math.abs(j-sw)<3?Math.round(Math.sin(t*40+j)*2):0;
+for(var i=0;i<N;i++){var v=g[j*N+i];if(v<.04)continue;
+var h=S*(.3+.7*Math.min(1,v));
+cx.fillRect((i+off)*S,j*S+(S-h)/2,S+.6,h)}}
+}
+var msgs=['Names are going fast. Check yours.','DNS synced. 0 records lost.','Your subdomain, your target. I just point.','Merged a minute ago. It resolves now.'];
+var mi=0,ci=0,el=document.getElementById('msg');
+function type(){var m=msgs[mi];if(ci<=m.length){el.textContent=m.slice(0,ci++);setTimeout(type,45)}else{setTimeout(function(){mi=(mi+1)%msgs.length;ci=0;type()},2600)}}
+if(still){el.textContent=msgs[0];draw(1)}else{type();(function f(ts){draw(ts/1000);requestAnimationFrame(f)})(0)}
+})();
+</script>
+</body>
+</html>

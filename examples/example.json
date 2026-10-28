@@ -1,0 +1,11 @@
+{
+  "owner": {
+    "username": "your-github-username",
+    "email": "you@example.com"
+  },
+  "description": "Example site",
+  "records": [
+    { "type": "CNAME", "name": "@", "value": "your-github-username.github.io", "proxied": true },
+    { "type": "TXT", "name": "_verify", "value": "example-verification-token" }
+  ]
+}

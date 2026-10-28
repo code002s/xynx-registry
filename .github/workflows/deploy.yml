@@ -1,0 +1,31 @@
+name: Sync DNS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'domains/**'
+  workflow_dispatch:
+
+concurrency:
+  group: dns-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate
+        run: node scripts/validate.js
+      - name: Sync to Cloudflare
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONES: ${{ secrets.CF_ZONES }}
+        run: node scripts/sync.js

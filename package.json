@@ -1,0 +1,14 @@
+{
+  "name": "xynx-registry",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Free subdomains on xynx.surf, xynx.pro, xynx.dev",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "sync:dry": "node scripts/sync.js --dry-run",
+    "sync": "node scripts/sync.js",
+    "serve": "node scripts/serve.js"
+  }
+}

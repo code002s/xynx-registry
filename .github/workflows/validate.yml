@@ -1,0 +1,36 @@
+name: Validate domains
+
+on:
+  pull_request:
+    paths:
+      - 'domains/**'
+      - 'scripts/**'
+      - 'reserved.json'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: List changed files
+        id: changed
+        run: |
+          {
+            echo 'files<<EOF'
+            git diff --name-only --diff-filter=AM origin/${{ github.base_ref }}...HEAD
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Validate
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+        run: node scripts/validate.js

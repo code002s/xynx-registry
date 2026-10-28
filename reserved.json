@@ -1,0 +1,9 @@
+[
+  "www", "mail", "email", "smtp", "imap", "pop", "pop3", "mx", "ns", "ns1", "ns2",
+  "ftp", "sftp", "ssh", "vpn", "admin", "root", "api", "app", "dev", "staging",
+  "test", "docs", "blog", "status", "support", "help", "login", "auth", "account",
+  "accounts", "secure", "security", "billing", "pay", "payment", "payments",
+  "cdn", "static", "assets", "dashboard", "console", "panel", "cpanel", "webmail",
+  "autodiscover", "autoconfig", "_dmarc", "_domainkey", "localhost", "xynx",
+  "cloudflare", "google", "github", "microsoft", "apple", "paypal", "bank"
+]
