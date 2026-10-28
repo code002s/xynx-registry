@@ -26,12 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The page is plain HTML: swap the placeholder for the real owner/repo so
-      # "Claim it" links and the GitHub button point at this repository.
-      - name: Point the page at this repository
+      # Same build as the Cloudflare Pages deploy: copy site/ to dist/ and swap
+      # the repo placeholder, so "Claim it" links point at this repository.
+      - name: Build site
         env:
           REPO: ${{ github.repository }}
-        run: sed -i "s|YOUR-GITHUB-USERNAME/xynx-registry|${REPO}|g" site/index.html
+        run: node scripts/build-site.js
 
       - uses: actions/configure-pages@v5
         with:
@@ -39,7 +39,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: dist
 
       - id: deployment
         uses: actions/deploy-pages@v4

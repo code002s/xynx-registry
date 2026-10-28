@@ -48,11 +48,16 @@
 - Запрещены фишинг, малварь, спам, нелегальный контент, выдача себя за чужой бренд, раздача доступа к чужим сервисам. Такие поддомены удаляются без предупреждения.
 - Поддомен, который 90+ дней ведёт на несуществующий сервис, может быть освобождён.
 
-## Деплой сайта (GitHub Pages)
+## Деплой сайта
 
-Сайт — один статический файл `site/index.html`, сборка не нужна. Workflow
-`.github/workflows/pages.yml` публикует папку `site/` и на лету подставляет
-`owner/repo` вместо плейсхолдера `YOUR-GITHUB-USERNAME/xynx-registry`.
+Сайт — статическая страница `site/index.html`. `npm run build` копирует её в
+`dist/` и подставляет `owner/repo` вместо плейсхолдера
+`YOUR-GITHUB-USERNAME/xynx-registry`, так что форкам не нужно ничего править руками.
+Публиковать можно в двух местах сразу — файлы одни и те же.
+
+### GitHub Pages
+
+Workflow `.github/workflows/pages.yml` собирает `dist/` и публикует его.
 
 1. Запушь проект в репозиторий на GitHub в ветку `main`.
 2. Settings → Pages → Build and deployment → Source: **GitHub Actions**.
@@ -62,7 +67,18 @@
 
 Дальше каждый push в `site/` переопубликует страницу автоматически.
 
-### Свой домен
+### Cloudflare Pages (бесплатный адрес `*.pages.dev`)
+
+```
+wrangler login                 # один раз
+npm run deploy:pages           # build + wrangler pages deploy dist
+```
+
+Первый деплой создаёт проект, дальше адрес постоянный:
+`https://<project>.pages.dev/`. Когда появится свой домен, его можно привязать
+в Cloudflare Pages → Custom domains, DNS-запись создастся сама.
+
+### Свой домен (GitHub Pages)
 
 - Settings → Pages → Custom domain → `xynx.surf`, затем включи Enforce HTTPS.
 - В Cloudflare для apex `xynx.surf` добавь A-записи на `185.199.108.153`,

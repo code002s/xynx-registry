@@ -9,6 +9,8 @@
     "validate": "node scripts/validate.js",
     "sync:dry": "node scripts/sync.js --dry-run",
     "sync": "node scripts/sync.js",
-    "serve": "node scripts/serve.js"
+    "serve": "node scripts/serve.js",
+    "build": "node scripts/build-site.js",
+    "deploy:pages": "node scripts/build-site.js && wrangler pages deploy dist --project-name xynx-registry --branch main --commit-dirty=true"
   }
 }
