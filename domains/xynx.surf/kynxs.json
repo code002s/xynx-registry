@@ -1,0 +1,7 @@
+{
+  "owner": { "username": "code002s" },
+  "description": "kynxs site",
+  "records": [
+    { "type": "CNAME", "name": "@", "value": "code002s.github.io", "proxied": true }
+  ]
+}
