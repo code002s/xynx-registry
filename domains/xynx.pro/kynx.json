@@ -1,0 +1,1 @@
+{"owner":{"username":"YOUR-GITHUB-LOGIN","email":"you@example.com"},"description":"My site","records":[{"type":"CNAME","name":"@","value":"YOUR-GITHUB-LOGIN.github.io","proxied":true}]}
